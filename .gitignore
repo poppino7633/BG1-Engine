@@ -1,6 +1,5 @@
 Build
 .cache
-dependencies
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
