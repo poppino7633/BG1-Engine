@@ -1,4 +1,5 @@
 #include <engine.h>
+#include <glad/glad.h>
 
 int main() {
 
@@ -8,11 +9,16 @@ int main() {
 
   engine->setBackgroundColor({0.1f, 0.3f, 0.3f, 1.0f});
  
-  StaticBuffer<unsigned int> buffer({1, 2, 3, 4, 5});
-  std::vector<unsigned int> u = {9, 10, 11};
-  buffer.update(2, u.begin(), u.end());
+  std::vector<Vertex> vertices = {
+    {{-1, -1, 0}, {}, {}, {}},
+    {{1, -1, 0}, {}, {}, {}},
+    {{0, 1, 0}, {}, {}, {}},
+  };
+  
+  BasicMesh mesh = BasicMesh(vertices, {0, 1, 2});
 
   while (!engine->shouldStop()) {
+    mesh.draw();
     engine->clear();
     engine->window->update();
   }

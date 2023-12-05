@@ -2,95 +2,53 @@
 #include "includes.h"
 #include <iostream>
 
-template <typename T>
-void StaticBuffer<T>::updateSubData(size_t offset, size_t size,
-                                    const void *data) {
-  if (size > this->size)
-    throw;
-  glNamedBufferSubData(ID, offset, size, data);
+unsigned int VertexArray::current = 0;
+
+VertexArray::VertexArray() {
+  glCreateVertexArrays(1, &ID);
+
+  glEnableVertexArrayAttrib(ID, 0);
+  glEnableVertexArrayAttrib(ID, 1);
+  glEnableVertexArrayAttrib(ID, 2);
+  glEnableVertexArrayAttrib(ID, 3);
+
+  glVertexArrayAttribFormat(ID, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
+  glVertexArrayAttribFormat(ID, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal));
+  glVertexArrayAttribFormat(ID, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
+  glVertexArrayAttribFormat(ID, 3, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, tangent));
+  
+  glVertexArrayAttribBinding(ID, 0, 0);
+  glVertexArrayAttribBinding(ID, 1, 0);
+  glVertexArrayAttribBinding(ID, 2, 0);
+  glVertexArrayAttribBinding(ID, 3, 0);
 }
 
-template <typename T>
-StaticBuffer<T>::StaticBuffer(const std::vector<T> &data)
-    : size(data.size() * sizeof(T)) {
-
-  glCreateBuffers(1, &ID);
-  glNamedBufferStorage(ID, data.size() * sizeof(T), data.data(),
-                       GL_DYNAMIC_STORAGE_BIT);
+void VertexArray::bindVertexBuffer(const VertexBuffer& buffer){
+  glVertexArrayVertexBuffer(ID, 0, buffer.getID(), 0, sizeof(Vertex));
 }
 
-template <typename T>
-StaticBuffer<T>::StaticBuffer(unsigned int count) : size(count * sizeof(T)) {
-  glCreateBuffers(1, &ID);
-  glNamedBufferStorage(ID, size * sizeof(T), nullptr, GL_DYNAMIC_STORAGE_BIT);
+void VertexArray::bindElementBuffer(const ElementBuffer& buffer) {
+  glVertexArrayElementBuffer(ID, buffer.getID());
 }
-
-template <typename T>
-StaticBuffer<T> update(unsigned int offset,
-                       typename std::vector<T>::iterator begin,
-                       typename std::vector<T>::iterator end) {
-  updateSubData(offset, (end - begin) * sizeof(T), &(*begin));
-}
-
-void DynamicBuffer::updateSubData(size_t offset, size_t size,
-                                  const void *data) {
-  if (size > this->size)
-    throw;
-  glNamedBufferSubData(ID, offset, size, data);
-}
-
-DynamicBuffer::DynamicBuffer() {
-  glCreateBuffers(1, &ID);
-  size = 0;
-}
-
-template <typename T> DynamicBuffer::DynamicBuffer(unsigned int count) {
-  glCreateBuffers(1, &ID);
-  glNamedBufferData(ID, count * sizeof(T), nullptr, GL_DYNAMIC_DRAW);
-  size = count * sizeof(T);
-}
-
-template <typename T> DynamicBuffer::DynamicBuffer(const std::vector<T> &data) {
-
-  glCreateBuffers(1, &ID);
-  glNamedBufferData(ID, data.size() * sizeof(T), data.data(), GL_DYNAMIC_DRAW);
-  size = data.size() * sizeof(T);
-}
-
-template <typename T> void DynamicBuffer::reallocate(unsigned int count) {
-  glNamedBufferData(ID, count * sizeof(T), nullptr, GL_DYNAMIC_DRAW);
-  size = count * sizeof(T);
-}
-
-template <typename T>
-void DynamicBuffer::reallocate(const std::vector<T> &data) {
-  glNamedBufferData(ID, data.size() * sizeof(T), data.data(), GL_DYNAMIC_DRAW);
-  size = data.size() * sizeof(T);
-}
-
-template <typename T>
-void DynamicBuffer::update(unsigned int offset,
-                           typename std::vector<T>::iterator begin,
-                           typename std::vector<T>::iterator end) {
-  updateSubData(offset * sizeof(T), (end - begin) * sizeof(T), &(*begin));
-}
-
-std::unique_ptr<VertexArray> VertexArray::current;
 
 void VertexArray::use() {
-  if (this == current.get())
-    return;
-
-  current.reset(this);
-  glBindVertexArray(ID);
-}
-
-VertexArray::VertexArray() { glCreateVertexArrays(1, &ID); }
+  if(ID != current) {
+    std::cout << "Changing VAO from " << current << " to " << ID << "\n"; 
+    glBindVertexArray(ID);
+    current = ID;
+  }
+};
 
 BasicMesh::BasicMesh(const std::vector<Vertex> &vertices,
-                     const std::vector<unsigned int> &indices) {
-  VBO = std::make_unique<StaticBuffer<Vertex>>(vertices);
-  EBO = std::make_unique<StaticBuffer<unsigned int>>(indices);
+                          const std::vector<unsigned int> &indices) {
+  VAO = VertexArray();
+  VertexBuffer VBO(vertices);
+  ElementBuffer EBO(indices);
+
+  count = indices.size();
+
+  VAO.bindVertexBuffer(VBO);
+  VAO.bindElementBuffer(EBO);
 }
 
 void BasicMesh::draw() {

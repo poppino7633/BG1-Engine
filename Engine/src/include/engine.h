@@ -1,7 +1,7 @@
 #include <array>
 #include <exception>
 #include <fstream>
-#include <glm/vec4.hpp>
+#include <glm/glm.hpp>
 #include <iostream>
 #include <map>
 #include <memory>

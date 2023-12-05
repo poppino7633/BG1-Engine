@@ -11,12 +11,12 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(dependencies/glfw)
 
-add_library(engine STATIC src/engine.cpp src/mesh.cpp glad.c)
+add_library(engine STATIC src/engine.cpp src/mesh.cpp src/buffer.cpp src/shader.cpp glad.c)
 
 target_include_directories(engine
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src 
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/include
-    INTERFACE ${PROJECT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src/include
+    PRIVATE ${PROJECT_SOURCE_DIR}/dependencies/include
+    PUBLIC ${PROJECT_SOURCE_DIR}/dependencies/include/public
+    INTERFACE ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}/src/include
 )
 
 target_link_Libraries(engine PUBLIC glfw)
