@@ -10,16 +10,17 @@ int main() {
   engine->setBackgroundColor({0.1f, 0.3f, 0.3f, 1.0f});
  
   std::vector<Vertex> vertices = {
-    {{-1, -1, 0}, {}, {}, {}},
-    {{1, -1, 0}, {}, {}, {}},
-    {{0, 1, 0}, {}, {}, {}},
+    {{-0.5f, -0.5f, 0}, {}, {}, {}},
+    {{0.5f, -0.5f, 0}, {}, {}, {}},
+    {{0, 0.5f, 0}, {}, {}, {}},
   };
+  std::shared_ptr<ShaderProgram> program = std::make_shared<ShaderProgram>("resources/shaders/basic.vert", "resources/shaders/basic.frag");
   
-  BasicMesh mesh = BasicMesh(vertices, {0, 1, 2});
+  BasicMesh mesh = BasicMesh(vertices, {0, 1, 2}, program);
 
   while (!engine->shouldStop()) {
-    mesh.draw();
     engine->clear();
+    mesh.draw();
     engine->window->update();
   }
 }

@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "buffer.h"
-
+#include "shader.h"
 
 class IMesh {
 public:
@@ -48,6 +48,7 @@ protected:
 
 public:
   BasicMesh(const std::vector<Vertex> &vertices,
-            const std::vector<unsigned int> &indices);
+            const std::vector<unsigned int> &indices, std::shared_ptr<ShaderProgram> shaderProgram);
+  std::shared_ptr<ShaderProgram> shaderProgram;
   void draw();
 };

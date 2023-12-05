@@ -5,16 +5,16 @@
 class IBuffer {
 protected:
   virtual void _read(size_t offset, size_t size, void *data) = 0;
+  unsigned int _createConstBuffer(size_t size, const void *data);
+  unsigned int _createStaticBuffer(size_t size, const void *data);
+  unsigned int _createDynamicBuffer();
+  void _reallocateBuffer(unsigned int ID, size_t size, const void *data);
+  void _updateBuffer(unsigned int ID, size_t offset, size_t size,
+                     const void *data);
+  void _readBuffer(unsigned int ID, size_t offset, size_t size,
+                   void *destination);
 };
 
-unsigned int _createConstBuffer(size_t size, const void *data);
-unsigned int _createStaticBuffer(size_t size, const void *data);
-unsigned int _createDynamicBuffer();
-void _reallocateBuffer(unsigned int ID, size_t size, const void *data);
-void _updateBuffer(unsigned int ID, size_t offset, size_t size,
-                   const void *data);
-void _readBuffer(unsigned int ID, size_t offset, size_t size,
-                 void *destination);
 
 class BufferOutOfRangeException : public std::runtime_error {
 public:
@@ -44,6 +44,8 @@ public:
     _read(0, count * sizeof(T), destination.data());
     return destination;
   }
+  unsigned int getCount() const { return count; }
+  unsigned int getID() const { return ID; }
 };
 
 template <typename T> class StaticBuffer : public IBuffer {
@@ -84,7 +86,8 @@ public:
   void replace(const std::vector<T> &data) {
     _reallocateBuffer(ID, data.size() * sizeof(T), data.data());
   }
-  unsigned int getCount() { return count; }
+  unsigned int getCount() const { return count; }
+  unsigned int getID() const { return ID; }
 };
 
 template <typename T> class DynamicBuffer : public IBuffer {
@@ -133,5 +136,6 @@ public:
     _reallocateBuffer(ID, data.size() * sizeof(T), data.data());
     count = data.size();
   }
-  unsigned int getCount() { return count; }
+  unsigned int getCount() const { return count; }
+  unsigned int getID() const { return ID; }
 };
