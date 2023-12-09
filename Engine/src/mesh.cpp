@@ -4,30 +4,24 @@
 
 unsigned int VertexArray::current = 0;
 
-VertexArray::VertexArray() {
+VertexArray::VertexArray() { 
   glCreateVertexArrays(1, &ID);
-
-  glEnableVertexArrayAttrib(ID, 0);
-  glEnableVertexArrayAttrib(ID, 1);
-  glEnableVertexArrayAttrib(ID, 2);
-  glEnableVertexArrayAttrib(ID, 3);
-
-  glVertexArrayAttribFormat(ID, 0, 3, GL_FLOAT, GL_FALSE,
-                            offsetof(Vertex, position));
-  glVertexArrayAttribFormat(ID, 1, 3, GL_FLOAT, GL_FALSE,
-                            offsetof(Vertex, normal));
-  glVertexArrayAttribFormat(ID, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, uv));
-  glVertexArrayAttribFormat(ID, 3, 3, GL_FLOAT, GL_FALSE,
-                            offsetof(Vertex, tangent));
-
-  glVertexArrayAttribBinding(ID, 0, 0);
-  glVertexArrayAttribBinding(ID, 1, 0);
-  glVertexArrayAttribBinding(ID, 2, 0);
-  glVertexArrayAttribBinding(ID, 3, 0);
 }
 
-void VertexArray::bindVertexBuffer(const VertexBuffer &buffer) {
-  glVertexArrayVertexBuffer(ID, 0, buffer.getID(), 0, sizeof(Vertex));
+template <typename T>
+void VertexArray::bindVertexBuffer(const VertexBuffer<T> &buffer) {
+  size_t size = T::getSize();
+  glVertexArrayVertexBuffer(ID, 0, buffer.getID(), 0, size);
+
+  std::vector<VertexAttribute> attributes = T::getAttributes();
+
+  for (VertexAttribute a : attributes) {
+    glEnableVertexArrayAttrib(ID, a.index);
+    GLenum type = GL_FLOAT;
+    glVertexArrayAttribFormat(ID, a.index, a.numComponents, type, GL_FALSE,
+                              a.offset);
+    glVertexArrayAttribBinding(ID, a.index, 0);
+  }
 }
 
 void VertexArray::bindElementBuffer(const ElementBuffer &buffer) {
@@ -36,20 +30,18 @@ void VertexArray::bindElementBuffer(const ElementBuffer &buffer) {
 
 void VertexArray::use() {
   if (ID != current) {
-    std::cout << "Changing VAO from " << current << " to " << ID << "\n";
     glBindVertexArray(ID);
     current = ID;
   }
 };
 
-BasicMesh::BasicMesh(const std::vector<Vertex> &vertices,
+BasicMesh::BasicMesh(const std::vector<BasicVertex> &vertices,
                      const std::vector<unsigned int> &indices,
-                     std::shared_ptr<ShaderProgram> shaderProgram) : shaderProgram(shaderProgram) {
+                     const std::shared_ptr<ShaderProgram> shaderProgram)
+    : count(indices.size()), shaderProgram(shaderProgram) {
   VAO = VertexArray();
-  VertexBuffer VBO(vertices);
+  VertexBuffer<BasicVertex> VBO(vertices);
   ElementBuffer EBO(indices);
-
-  count = indices.size();
 
   VAO.bindVertexBuffer(VBO);
   VAO.bindElementBuffer(EBO);
@@ -60,3 +52,21 @@ void BasicMesh::draw() {
   shaderProgram->use();
   glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 }
+
+Mesh::Mesh(const std::vector<Vertex> &vertices,
+           const std::vector<unsigned int> &indices,
+           const std::shared_ptr<ShaderProgram> shaderProgram)
+    : count(indices.size()), shaderProgram(shaderProgram) {
+  VAO = VertexArray();
+  VertexBuffer<Vertex> VBO(vertices);
+  ElementBuffer EBO(indices);
+
+  VAO.bindVertexBuffer(VBO);
+  VAO.bindElementBuffer(EBO);
+}
+
+void Mesh::draw() {
+  VAO.use();
+  shaderProgram->use();
+  glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+};

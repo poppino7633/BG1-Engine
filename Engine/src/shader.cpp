@@ -21,8 +21,8 @@ unsigned int _createShader(ShaderProgram::Shader::ShaderType type) {
   };
 }
 
-ShaderProgram::Shader::Shader(std::string path,
-                              ShaderProgram::Shader::ShaderType type)
+ShaderProgram::Shader::Shader(const std::filesystem::path path,
+                              const ShaderProgram::Shader::ShaderType type)
     : ID(_createShader(type)) {
   std::string code;
   std::ifstream file;
@@ -37,9 +37,7 @@ ShaderProgram::Shader::Shader(std::string path,
     code = ss.str();
 
   } catch (std::ifstream::failure e) {
-    std::cout << "SHADER ERROR"
-              << "\n";
-    throw;
+    console::fatal(ShaderCompilationException("Cannot access shader file at path: " + path.string()));
   };
   const char *codeCStr = code.c_str();
   glShaderSource(ID, 1, &codeCStr, NULL);
@@ -47,26 +45,26 @@ ShaderProgram::Shader::Shader(std::string path,
 
   int success;
   std::string infoLog;
-  const unsigned int maxSize = 1024;
+  constexpr size_t maxSize = 1024;
   infoLog.reserve(maxSize);
   int size;
   glGetShaderiv(ID, GL_COMPILE_STATUS, &success);
 
   if (!success) {
-    std::cout << "SHADER COMPILATION ERROR\n";
     glGetShaderInfoLog(ID, maxSize, &size, infoLog.data());
     infoLog.resize(size);
-    std::cout << infoLog << "\n";
-    throw;
+    console::fatal(ShaderCompilationException(infoLog));
+  } else {
+    console::success("Compiled shader ID " + std::to_string(ID));
   }
 }
 
 ShaderProgram::Shader::~Shader() {
-  std::cout << "Deleting shader ( ID " << ID << " )\n";
+  console::info("Deleting shader ID " + std::to_string(ID));
   glDeleteShader(ID);
 }
 
-ShaderProgram::ShaderProgram(std::string vertexPath, std::string fragmentPath)
+ShaderProgram::ShaderProgram(const std::filesystem::path vertexPath, const std::filesystem::path fragmentPath)
     : ID(glCreateProgram()) {
   Shader vertex(vertexPath, Shader::vertex);
   Shader fragment(fragmentPath, Shader::fragment);
@@ -77,23 +75,26 @@ ShaderProgram::ShaderProgram(std::string vertexPath, std::string fragmentPath)
 
   int success;
   std::string infoLog;
-  const unsigned int maxSize = 1024;
+  constexpr size_t maxSize = 1024;
   infoLog.reserve(maxSize);
   int size;
   glGetProgramiv(ID, GL_LINK_STATUS, &success);
   if (!success) {
     glGetShaderInfoLog(ID, maxSize, &size, infoLog.data());
     infoLog.resize(size);
-    std::cout << infoLog << "\n";
-    throw;
+    console::fatal(ShaderProgramLinkException(infoLog));
+  } else {
+    console::success("Linked shader program ID " + std::to_string(ID));
   }
 }
 
 void ShaderProgram::use() const {
   if (ID != current) {
-    std::cout << "Switching shader program from ID " << current << " to ID "
-              << ID << "\n";
     glUseProgram(ID);
     current = ID;
   }
 };
+
+std::string ShaderProgram::toString() const {
+  return std::string("ShaderProgram: [") + "ID: " + std::to_string(ID) + ", current: " + std::to_string(current) + "]";
+}

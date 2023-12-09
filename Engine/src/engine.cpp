@@ -6,6 +6,7 @@ std::shared_ptr<Engine> Engine::instance(nullptr);
 void message_callback(GLenum source, GLenum type, GLuint id, GLenum severity,
                       GLsizei length, GLchar const *message,
                       void const *user_param) {
+
   auto const src_str = [source]() {
     switch (source) {
     case GL_DEBUG_SOURCE_API:
@@ -25,6 +26,7 @@ void message_callback(GLenum source, GLenum type, GLuint id, GLenum severity,
     }
   }();
 
+  bool warning = 0;
   auto const type_str = [type]() {
     switch (type) {
     case GL_DEBUG_TYPE_ERROR:
@@ -60,13 +62,15 @@ void message_callback(GLenum source, GLenum type, GLuint id, GLenum severity,
       return "";
     }
   }();
-  std::cout << src_str << ", " << type_str << ", " << severity_str << ", " << id
+  std::stringstream output;
+  output << src_str << " " << id
             << ": " << message << '\n';
+  if(type_str != std::string("ERROR")) console::warning(output.str());
+  else console::error(output.str());
 }
 
 Engine::Engine() {
 
-  std::cout << "Engine started\n";
 
   window = std::make_unique<Window>(width, height, "BG1 Demo", 0);
 
@@ -81,6 +85,7 @@ Engine::Engine() {
   glDebugMessageCallback(message_callback, nullptr);
   glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE,
                         GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
+  console::success("Engine started");
 }
 
 std::shared_ptr<Engine> Engine::Get() {
@@ -108,7 +113,7 @@ Engine::~Engine() {
 
   glfwTerminate();
 
-  std::cout << "Engine stopped\n";
+  console::success("Engine stopped");
 }
 
 Window::Window(unsigned int width, unsigned int height, std::string title,
