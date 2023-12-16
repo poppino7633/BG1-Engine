@@ -1,6 +1,5 @@
 #include <stdexcept>
 #include <string>
-#include <filesystem>
 
 #include "log.h"
 
@@ -24,11 +23,11 @@ public:
     const unsigned int ID;
   public:
     enum ShaderType { vertex, fragment };
-    Shader(const std::filesystem::path path, const ShaderType type);
+    Shader(const std::string path, const ShaderType type);
     unsigned int getID() const { return ID; }
     ~Shader();
   };
-  ShaderProgram(const std::filesystem::path vertexPath, const std::filesystem::path fragmentPath);
+  ShaderProgram(const std::string vertexPath, const std::string fragmentPath);
   void use() const;
   unsigned int getID() const { return ID; }
   std::string toString() const;
