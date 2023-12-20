@@ -1,6 +1,8 @@
 #include "include/engine.h"
 #include "includes.h"
 
+#include <sstream>
+
 std::shared_ptr<Engine> Engine::instance(nullptr);
 
 void message_callback(GLenum source, GLenum type, GLuint id, GLenum severity,

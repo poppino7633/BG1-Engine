@@ -21,7 +21,7 @@ unsigned int _createShader(ShaderProgram::Shader::ShaderType type) {
   };
 }
 
-ShaderProgram::Shader::Shader(const std::string path,
+ShaderProgram::Shader::Shader(const std::filesystem::path path,
                               const ShaderProgram::Shader::ShaderType type)
     : ID(_createShader(type)) {
   std::string code;
@@ -37,7 +37,7 @@ ShaderProgram::Shader::Shader(const std::string path,
     code = ss.str();
 
   } catch (std::ifstream::failure e) {
-    console::fatal(ShaderCompilationException("Cannot access shader file at path: " + path));
+    console::fatal(ShaderCompilationException("Cannot access shader file at path: " + path.string()));
   };
   const char *codeCStr = code.c_str();
   glShaderSource(ID, 1, &codeCStr, NULL);
@@ -64,7 +64,7 @@ ShaderProgram::Shader::~Shader() {
   glDeleteShader(ID);
 }
 
-ShaderProgram::ShaderProgram(const std::string vertexPath, const std::string fragmentPath)
+ShaderProgram::ShaderProgram(const std::filesystem::path vertexPath, const std::filesystem::path fragmentPath)
     : ID(glCreateProgram()) {
   Shader vertex(vertexPath, Shader::vertex);
   Shader fragment(fragmentPath, Shader::fragment);

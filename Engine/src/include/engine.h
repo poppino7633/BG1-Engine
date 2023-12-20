@@ -1,11 +1,5 @@
-#include <array>
-#include <exception>
-#include <fstream>
 #include <glm/glm.hpp>
-#include <iostream>
-#include <map>
 #include <memory>
-#include <vector>
 
 #include "mesh.h"
 

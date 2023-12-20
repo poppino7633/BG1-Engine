@@ -22,7 +22,7 @@ target_include_directories(engine
 )
 
 target_link_Libraries(engine PUBLIC glfw)
-target_link_options(engine PUBLIC -static-libstdc++ -g)
+target_link_options(engine PUBLIC -lboost_filesystem -static-libstdc++ -g)
 
 
 install(TARGETS engine

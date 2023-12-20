@@ -1,6 +1,7 @@
 #include <engine.h>
 #include <glad/glad.h>
 
+
 int main() {
 
   std::cout << Color::Modifier(Color::FG_DEFAULT);
