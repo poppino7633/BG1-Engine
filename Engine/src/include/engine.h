@@ -2,7 +2,6 @@
 #include <memory>
 
 #include "mesh.h"
-#include "texture.h"
 
 class GLFWException : public std::runtime_error {
 public:
