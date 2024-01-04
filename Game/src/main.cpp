@@ -40,7 +40,8 @@ int main() {
     {{-0.5f, 0.5f, 0}, {0, 0, 0}, {0.0f, 1.0f}, {0, 0, 0}},
   };
 
-  Mesh mesh(vertices, {0, 1, 2, 2, 3, 0}, program);
+  Mesh mesh(vertices, {0, 1, 2, 2, 3, 0});
+  mesh.shaderProgram = program;
   mesh.material = mat;
    
 
