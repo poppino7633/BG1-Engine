@@ -37,7 +37,8 @@ ShaderProgram::Shader::Shader(const std::filesystem::path path,
     code = ss.str();
 
   } catch (std::ifstream::failure e) {
-    console::fatal(ShaderCompilationException("Cannot access shader file at path: " + path.string()));
+    console::fatal<ShaderCompilationException>(
+        "Cannot access shader file at path: " + path.string());
   };
   const char *codeCStr = code.c_str();
   glShaderSource(ID, 1, &codeCStr, NULL);
@@ -46,14 +47,14 @@ ShaderProgram::Shader::Shader(const std::filesystem::path path,
   int success;
   std::string infoLog;
   constexpr size_t maxSize = 1024;
-  infoLog.reserve(maxSize);
+  infoLog.resize(maxSize);
   int size;
   glGetShaderiv(ID, GL_COMPILE_STATUS, &success);
 
   if (!success) {
     glGetShaderInfoLog(ID, maxSize, &size, infoLog.data());
     infoLog.resize(size);
-    console::fatal(ShaderCompilationException(infoLog));
+    console::fatal<ShaderCompilationException>(infoLog);
   } else {
     console::success("Compiled shader ID " + std::to_string(ID));
   }
@@ -64,7 +65,8 @@ ShaderProgram::Shader::~Shader() {
   glDeleteShader(ID);
 }
 
-ShaderProgram::ShaderProgram(const std::filesystem::path vertexPath, const std::filesystem::path fragmentPath)
+ShaderProgram::ShaderProgram(const std::filesystem::path vertexPath,
+                             const std::filesystem::path fragmentPath)
     : ID(glCreateProgram()) {
   Shader vertex(vertexPath, Shader::vertex);
   Shader fragment(fragmentPath, Shader::fragment);
@@ -76,13 +78,13 @@ ShaderProgram::ShaderProgram(const std::filesystem::path vertexPath, const std::
   int success;
   std::string infoLog;
   constexpr size_t maxSize = 1024;
-  infoLog.reserve(maxSize);
+  infoLog.resize(maxSize);
   int size;
   glGetProgramiv(ID, GL_LINK_STATUS, &success);
   if (!success) {
     glGetShaderInfoLog(ID, maxSize, &size, infoLog.data());
     infoLog.resize(size);
-    console::fatal(ShaderProgramLinkException(infoLog));
+    console::fatal<ShaderProgramLinkException>(infoLog);
   } else {
     console::success("Linked shader program ID " + std::to_string(ID));
   }
@@ -96,5 +98,6 @@ void ShaderProgram::use() const {
 };
 
 std::string ShaderProgram::toString() const {
-  return std::string("ShaderProgram: [") + "ID: " + std::to_string(ID) + ", current: " + std::to_string(current) + "]";
+  return std::string("ShaderProgram: [") + "ID: " + std::to_string(ID) +
+         ", current: " + std::to_string(current) + "]";
 }

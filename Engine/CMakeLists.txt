@@ -12,7 +12,7 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(dependencies/glfw)
 
-add_library(engine SHARED src/engine.cpp src/mesh.cpp src/buffer.cpp src/shader.cpp src/log.cpp glad.c)
+add_library(engine SHARED src/stb_image.cpp src/engine.cpp src/mesh.cpp src/buffer.cpp src/shader.cpp src/log.cpp src/texture.cpp src/material.cpp glad.c)
 
 
 target_include_directories(engine

@@ -12,9 +12,9 @@ Color::Modifier white(Color::FG_WHITE);
 Color::Modifier bright_white(Color::FG_BRIGHT_WHITE);
 Color::Modifier def(Color::FG_DEFAULT);
 
-
 void console::success(std::string message) {
-  std::cout << bright_green << "SUCCESS: " << green << message << def << std::endl;
+  std::cout << bright_green << "SUCCESS: " << green << message << def
+            << std::endl;
 }
 
 void console::info(std::string message) {
@@ -22,33 +22,23 @@ void console::info(std::string message) {
 }
 
 void console::warning(std::string message) {
-  std::cout << bright_yellow << "WARNING: " << yellow << message << def << std::endl;
+  std::cout << bright_yellow << "WARNING: " << yellow << message << def
+            << std::endl;
 }
 
 void console::error(std::string message) {
-  std::cout << bright_red << "ERROR: " << red << message << def << std::endl; 
+  std::cout << bright_red << "ERROR: " << red << message << def << std::endl;
 }
 
 
-void console::fatal(std::runtime_error error) {
-  std::cout << def;
-  throw error;
-}
-
-
-void console::success(const IPrintable& message) {
+void console::success(const IPrintable &message) {
   success(message.toString());
 }
 
-void console::info(const IPrintable& message) {
-  info(message.toString());
-}
+void console::info(const IPrintable &message) { info(message.toString()); }
 
-void console::warning(const IPrintable& message) {
+void console::warning(const IPrintable &message) {
   warning(message.toString());
 }
 
-void console::error(const IPrintable& message) {
-  error(message.toString());
-}
-
+void console::error(const IPrintable &message) { error(message.toString()); }

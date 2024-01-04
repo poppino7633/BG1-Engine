@@ -1,6 +1,5 @@
 #include "include/mesh.h"
 #include "includes.h"
-#include <iostream>
 
 unsigned int VertexArray::current = 0;
 
@@ -54,9 +53,8 @@ void BasicMesh::draw() {
 }
 
 Mesh::Mesh(const std::vector<Vertex> &vertices,
-           const std::vector<unsigned int> &indices,
-           const std::shared_ptr<ShaderProgram> shaderProgram)
-    : count(indices.size()), shaderProgram(shaderProgram) {
+           const std::vector<unsigned int> &indices) 
+    : count(indices.size()) {
   VAO = VertexArray();
   VertexBuffer<Vertex> VBO(vertices);
   ElementBuffer EBO(indices);
@@ -65,8 +63,28 @@ Mesh::Mesh(const std::vector<Vertex> &vertices,
   VAO.bindElementBuffer(EBO);
 }
 
+
 void Mesh::draw() {
   VAO.use();
   shaderProgram->use();
+  if(material) material->bind();
   glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

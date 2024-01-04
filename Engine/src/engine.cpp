@@ -1,9 +1,10 @@
 #include "include/engine.h"
 #include "includes.h"
 
+#include <memory>
 #include <sstream>
 
-std::shared_ptr<Engine> Engine::instance(nullptr);
+std::weak_ptr<Engine> Engine::instance;
 
 void message_callback(GLenum source, GLenum type, GLuint id, GLenum severity,
                       GLsizei length, GLchar const *message,
@@ -87,16 +88,21 @@ Engine::Engine() {
   glDebugMessageCallback(message_callback, nullptr);
   glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE,
                         GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
   console::success("Engine started");
 }
 
 std::shared_ptr<Engine> Engine::Get() {
-
-  if (instance) {
-    return instance;
-  } else {
-    instance = std::shared_ptr<Engine>(new Engine());
-    return instance;
+  try {
+    return std::shared_ptr<Engine> (instance);
+  } catch (std::bad_weak_ptr) {
+    struct PEngine : public Engine {};
+    std::shared_ptr<PEngine> inst = std::make_shared<PEngine>();
+    instance = std::weak_ptr(inst);
+    return inst;
   }
 }
 
@@ -139,7 +145,7 @@ Window::Window(unsigned int width, unsigned int height, std::string title,
     glfwTerminate();
     throw GLFWException("Cannot create window!");
   }
-  glfwMakeContextCurrent((GLFWwindow *)windowPtr);
+  glfwMakeContextCurrent(static_cast<GLFWwindow*>(windowPtr));
 }
 
 void Window::resize(unsigned int width, unsigned int height) {
@@ -153,12 +159,12 @@ void Window::resize(unsigned int width, unsigned int height) {
 }
 
 bool Window::shouldClose() {
-  return glfwWindowShouldClose((GLFWwindow *)windowPtr);
+  return glfwWindowShouldClose(static_cast<GLFWwindow*>(windowPtr));
 }
 
 void Window::update() {
 
-  glfwSwapBuffers((GLFWwindow *)windowPtr);
+  glfwSwapBuffers(static_cast<GLFWwindow*>(windowPtr));
   glfwPollEvents();
 }
 

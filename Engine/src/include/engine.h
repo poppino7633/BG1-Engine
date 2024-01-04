@@ -2,6 +2,7 @@
 #include <memory>
 
 #include "mesh.h"
+#include "texture.h"
 
 class GLFWException : public std::runtime_error {
 public:
@@ -16,7 +17,7 @@ public:
 class Window {
 
 protected:
-  void *windowPtr;
+  void* windowPtr;
   unsigned int width, height;
   bool fullscreen;
 
@@ -31,7 +32,7 @@ public:
 class Engine {
 
 protected:
-  static std::shared_ptr<Engine> instance;
+  static std::weak_ptr<Engine> instance;
 
   Engine();
 

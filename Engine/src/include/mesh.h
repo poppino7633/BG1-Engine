@@ -2,9 +2,9 @@
 #include <memory>
 #include <vector>
 
-#include "log.h"
 #include "buffer.h"
 #include "shader.h"
+#include "material.h"
 
 class IMesh {
 public:
@@ -92,8 +92,10 @@ protected:
 
 public:
   Mesh(const std::vector<Vertex> &vertices,
-       const std::vector<unsigned int> &indices,
-       const std::shared_ptr<ShaderProgram> shaderProgram);
+       const std::vector<unsigned int> &indices); 
   std::shared_ptr<ShaderProgram> shaderProgram;
+  std::shared_ptr<IMaterial> material;
   void draw();
 };
+
+
