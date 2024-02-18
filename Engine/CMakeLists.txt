@@ -5,7 +5,6 @@ project(engine VERSION 1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS True)
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -22,6 +21,7 @@ target_include_directories(engine
 )
 
 target_link_Libraries(engine PUBLIC glfw)
+target_compile_options(engine PUBLIC -g)
 target_link_options(engine PUBLIC -lboost_filesystem -static-libstdc++ -g)
 
 

@@ -13,6 +13,10 @@ void IBuffer::_readBuffer(unsigned int ID, size_t offset, size_t size, void *des
   glGetNamedBufferSubData(ID, offset, size, destination);
 }
 
+void IBuffer::_bindUBOBase(unsigned int ID, unsigned int index){
+  glBindBufferBase(GL_UNIFORM_BUFFER, index, ID);
+}
+
 unsigned int IBuffer::_createConstBuffer(size_t size, const void *data){
   unsigned int buffer;
   glCreateBuffers(1, &buffer);
@@ -33,3 +37,4 @@ unsigned int IBuffer::_createDynamicBuffer(){
   glCreateBuffers(1, &buffer);
   return buffer;
 }
+

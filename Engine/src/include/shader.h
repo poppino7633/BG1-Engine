@@ -5,6 +5,7 @@
 #include "buffer.h"
 #include "log.h"
 
+
 class ShaderCompilationException : public std::runtime_error {
 public:
   ShaderCompilationException(std::string message) : runtime_error(message) {}
@@ -38,12 +39,22 @@ public:
   std::string toString() const;
 };
 
-template <typename T> class UniformBuffer : StaticBuffer<T> {
+template <typename T> class UniformBuffer : public StaticBuffer<T> {
 protected:
   T data;
 
+  void _bindIndex(unsigned int ID, unsigned int index);
+
 public:
-  UniformBuffer();
-  T getData();
-  void setData(T data);
+  UniformBuffer() : StaticBuffer<T>(1) {
+
+  };
+  T getData() { return data; }
+  void setData(T data) {
+    this->data = data;
+    this->update(0, {data}); 
+  };
+  void bindToIndex(unsigned int index) {
+    this->_bindUBOBase(this->getID(), index);
+  };
 };

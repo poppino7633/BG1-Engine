@@ -1,6 +1,11 @@
 #include <engine.h>
 #include <glad/glad.h>
+#include <string>
 
+struct testUBO {
+  glm::vec4 color;
+  glm::vec4 pos;
+};
 
 int main() {
 
@@ -44,7 +49,13 @@ int main() {
   mesh.shaderProgram = program;
   mesh.material = mat;
    
+  UniformBuffer<testUBO> ubo;
 
+  ubo.setData({{0.5f, 0.2f, 0.7f, 1.0f}, {0.2f, 0.8f, 0.5f, 1.0f}});
+
+  ubo.bindToIndex(3);
+
+  console::info(std::to_string(ubo.getData().color.r));
 
   while (!engine->shouldStop()) {
     engine->clear();

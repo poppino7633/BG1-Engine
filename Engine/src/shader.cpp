@@ -92,7 +92,7 @@ ShaderProgram::ShaderProgram(const std::filesystem::path vertexPath,
 
 void ShaderProgram::use() const {
   if (ID != current) {
-    glUseProgram(ID);
+          glUseProgram(ID);
     current = ID;
   }
 };
@@ -101,3 +101,5 @@ std::string ShaderProgram::toString() const {
   return std::string("ShaderProgram: [") + "ID: " + std::to_string(ID) +
          ", current: " + std::to_string(current) + "]";
 }
+
+

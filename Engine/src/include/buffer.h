@@ -8,6 +8,7 @@ protected:
   unsigned int _createConstBuffer(size_t size, const void *data);
   unsigned int _createStaticBuffer(size_t size, const void *data);
   unsigned int _createDynamicBuffer();
+  void _bindUBOBase(unsigned int ID, unsigned int index);
   void _reallocateBuffer(unsigned int ID, size_t size, const void *data);
   void _updateBuffer(unsigned int ID, size_t offset, size_t size,
                      const void *data);
